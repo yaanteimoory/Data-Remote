@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.daremote.MainViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edittext_timespan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="@{!viewModel.isLooping}"
+            android:text='@{(viewModel.timeSpan == 0) ? String.valueOf(viewModel.timeSpan) : "" }'
+            android:hint="@string/timespan_hint"
+            android:inputType="time"
+            app:layout_constraintBottom_toTopOf="@+id/switch_loop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_loop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="8dp"
+            android:textOff="@string/switch_off"
+            android:textOn="@string/switch_on"
+            android:checked="@{viewModel.isLooping}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/edittext_timespan"
+            app:layout_constraintStart_toStartOf="@id/edittext_timespan"
+            app:layout_constraintTop_toBottomOf="@id/edittext_timespan"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:switchPadding="12dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
