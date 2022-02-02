@@ -3,4 +3,5 @@
     <string name="timespan_hint">timespan</string>
     <string name="switch_off">OFF</string>
     <string name="switch_on">ON</string>
+    <string name="timespan_title">بازه زمانی برحسب ثانیه</string>
 </resources>

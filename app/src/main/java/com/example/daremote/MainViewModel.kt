@@ -1,51 +1,54 @@
 package com.example.daremote
 
+import android.content.Context
 import android.telephony.TelephonyManager
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Exception
+import kotlin.time.Duration
 
-class MainViewModel(val mobileData: MobileData) : ViewModel() {
+class MainViewModel : ViewModel() {
 
-//    val mTimeSpan: Int = App.sharedPreferences?.getInt(KEY_TIME_SPAN, 0) ?: 0
+//        val timeSpan: Int = App.sharedPreferences?.getInt(KEY_TIME_SPAN, 0) ?: 0
 //    val mIsLooping: Boolean = App.sharedPreferences?.getBoolean(KEY_LOOP, false) ?: false
 //
-    private val _mTimeSpan: MutableLiveData<Int>  = MutableLiveData<Int>(0)
-    val timeSpan:LiveData<Int> = _mTimeSpan
-
-    private val _mIsLooping: MutableLiveData<Boolean>  = MutableLiveData<Boolean>(false)
-    val isLooping:LiveData<Boolean> = _mIsLooping
+//    private val _mTimeSpan: MutableLiveData<Int> = MutableLiveData<Int>(0)
+//    val timeSpan: LiveData<Int> = _mTimeSpan
 
 
-    private fun startLoop(){
-        GlobalScope.launch(Dispatchers.IO) {
 
-//            val imageUrl = URL("‍‍‍")
-//
-//            val httpConnection = imageUrl.openConnection() as HttpURLConnection
-//            httpConnection.doInput = true
-//            httpConnection.connect()
-//
-//            val inputStream = httpConnection.inputStream
-//            val bitmapImage = BitmapFactory.decodeStream(inputStream)
+    val mIsLooping: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+    val isLooping: LiveData<Boolean> = mIsLooping
+    private var  scope: Job? = null
 
-            launch(Dispatchers.Main) {
+
+    private fun startLoop(context: Context) {
+        scope = GlobalScope.launch(Dispatchers.IO) {
+            while (true) {
+
+                val second = App.sharedPreferences?.getInt(KEY_TIME_SPAN,0)?:0
+                Log.d("TAG", "startLoop: sec: $second")
+                delay(7000)
+                launch(Dispatchers.Main) {
+                    Toast.makeText(context, "loop",Toast.LENGTH_LONG).show()
 //                imageView.setImageBitmap(bitmapImage)
+                }
             }
         }
 
     }
 
-    private fun stopLoop(){
-
+    private fun stopLoop() {
+//            scope?.cancel()
     }
 
 
-    fun start() {
-        startLoop()
+    fun start(context: Context) {
+        startLoop(context)
         App.sharedPreferences?.edit()?.run {
             putBoolean(KEY_LOOP, true)
             apply()
@@ -59,6 +62,34 @@ class MainViewModel(val mobileData: MobileData) : ViewModel() {
             apply()
         }
     }
+}
+
+class  MobileData(private val context: Context){
+
+
+
+    private val service : TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    fun setMobileDataState(mobileDataEnabled: Boolean){
+        Toast.makeText(context,"change data",Toast.LENGTH_LONG ).show()
+        try {
+            service.javaClass.getDeclaredMethod("setDataEnabled", Boolean::class.java).invoke(service,mobileDataEnabled)
+        }catch (e: Exception){
+            Log.e("TAG", "Error setting mobile data state", e)
+        }
+
+    }
+    fun getMobileDataState():Boolean{
+
+        try {
+            return service.javaClass.getDeclaredMethod("getDataEnabled").invoke(service) as Boolean
+        }
+        catch (e: Exception){
+            Log.e("TAG", "Error getting mobile data state", e)
+        }
+        return false
+
+    }
+
 }
 
 
